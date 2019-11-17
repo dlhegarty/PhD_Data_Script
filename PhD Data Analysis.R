@@ -1,7 +1,7 @@
 # 1. Installing and Loading Packages -----------------------------------------
 ### loading relevant packages all at once using pacman
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(devtools, mvtnorm, loo, coda, outliers, psych, reshape2, corrplot, plyr, mice, tidyverse, corrr, igraph, ggraph, Amelia, MVN, car, MASS, rcompanion, combinat, DMwR, mice, mvoutlier, compute.es, effects, multcomp, pastecs, compute.es, pastecs, broom, WRS2, nortest, apaTables, VIM, boot, statar, stargazer, pander, missForest, data.table, Hmisc, lavaan, GPArotation, nFactors, rlang, brms, BayesFactor, bayesplot, gridExtra, hornpa, ez, lme4, robustbase, bootES, EffectLiteR, robustlmm, kableExtra, nlme, semPlot, qgraph, simsem, simpleboot, viridis, plotly, probemod, jtools, interactions, mediation, xtable, htmlTable, huxtable, sfsmisc, cowplot, irr, interflex, NSM3, clickR, dabestr, effsize, sjstats, pequod, sjmisc)
+pacman::p_load(devtools, mvtnorm, loo, coda, outliers, psych, reshape2, corrplot, plyr, mice, tidyverse, corrr, igraph, ggraph, Amelia, MVN, car, MASS, rcompanion, combinat, DMwR, mice, mvoutlier, compute.es, effects, multcomp, pastecs, compute.es, pastecs, broom, WRS2, nortest, apaTables, VIM, boot, statar, stargazer, pander, missForest, data.table, Hmisc, lavaan, GPArotation, nFactors, rlang, brms, BayesFactor, bayesplot, gridExtra, hornpa, ez, lme4, robustbase, bootES, EffectLiteR, robustlmm, kableExtra, nlme, semPlot, qgraph, simsem, simpleboot, viridis, plotly, probemod, jtools, interactions, mediation, xtable, htmlTable, huxtable, sfsmisc, cowplot, irr, interflex, NSM3, clickR, dabestr, effsize, sjstats, pequod, sjmisc, TOSTER)
 
 
 
@@ -147,7 +147,7 @@ X3ConnDiffScore <- (df1$X3ConnSingle/20)-(df1$X3ConnSwitch/20)
 df1 <- add_column(df1, X3ConnDiffScore, .after = "X3ConnSwitch")
 rm("X1ConnDiffScore","X2ConnDiffScore","X3ConnDiffScore")
 
-
+df1NR <- df1
 
 
 # 6. Complex Span Data - Removal ---------------------------------------------
@@ -202,6 +202,8 @@ df1 <- df1[,-c(202:210)]
 df1 <- df1[!(df1$Train.Hr<9),] ### this removes 6 individual cases
 fidelity <- fidelity[!(fidelity$Training..hr.<9),] ### removes same cases from fidelity data
 write.csv(df1,"df1.csv")
+
+
 
 
 
@@ -354,6 +356,7 @@ t.test(Age.Yr ~ Group, data=df1)
 describeBy(df1$Age.Yr, df1$Group)
 mes(9.95, 10.1, 1.11, 1.05, 50, 55) ### Cohen's d 
 
+
 ### Do groups differ on the number of hours they trained?
 model1 <- lm(Train.Hr ~ Group, data=df1)
 Anova(model1, type = "III")
@@ -362,6 +365,7 @@ for(i in 1:4)plot(model1, which=i) ### definitely NOT normal
 t.test(Train.Hr ~ Group, data=df1)
 describeBy(df1$Train.Hr, df1$Group)
 mes(10.29, 10.25, 0.42, 0.34, 50, 55) ### Cohen's d 
+
 
 ### Individual T1 tests
 ### Individual Shifting Measures
@@ -384,10 +388,12 @@ mes(0.8, 0.84, 0.09, 0.09, 50, 55) ### Cohen's d
 ### Individual Working Memory measures
 t.test(X1OSPANpartialscore ~ Group, data=df1)# * significant difference
 describeBy(df1$X1OSPANpartialscore, df1$Group)
-mes(0.54, 0.67, 0.2, 0.22, 50, 55) ### Cohen's d 
+mes(0.54, 0.67, 0.2, 0.22, 39, 48) ### Cohen's d 
+TOSTtwo(m1=0.54,m2=0.67,sd1=0.2,sd2=0.22,n1=39,n2=48,low_eqbound_d=-0.3, high_eqbound_d=0.3, alpha = 0.05, var.equal=FALSE) #using TOSTER (Lakens et al., 2018), is non-significant TOST but significant NHST
 t.test(X1RSPANpartialscore ~ Group, data=df1)# * significant difference
 describeBy(df1$X1RSPANpartialscore, df1$Group)
-mes(0.57, 0.67, 0.23, 0.19, 50, 55) ### Cohen's d 
+mes(0.57, 0.67, 0.23, 0.19, 44, 46) ### Cohen's d 
+TOSTtwo(m1=0.57,m2=0.67,sd1=0.23,sd2=0.19,n1=44,n2=46,low_eqbound_d=-0.3, high_eqbound_d=0.3, alpha = 0.05, var.equal=FALSE) #using TOSTER (Lakens et al., 2018), is non-significant TOST but significant NHST
 t.test(X1SYMSPANpartialscore ~ Group, data=df1)
 
 
@@ -396,6 +402,7 @@ t.test(X1RTaverage ~ Group, data=df1)
 t.test(X1NAI ~ Group, data=df1) # * significant difference
 describeBy(df1$X1NAI, df1$Group)
 mes(110.2, 115.96, 11.48, 13.27, 50, 55) ### Cohen's d 
+TOSTtwo(m1=110.2,m2=115.96,sd1=11.48,sd2=13.27,n1=50,n2=50,low_eqbound_d=-0.3, high_eqbound_d=0.3, alpha = 0.05, var.equal=FALSE) #using TOSTER (Lakens et al., 2018), is non-significant TOST but significant NHST
 t.test(X1PATmScale ~ Group, data=df1) # * significant difference
 describeBy(df1$X1PATmScale, df1$Group)
 mes(130.27, 134.21, 11, 8.74, 50, 55) ### Cohen's d 
@@ -405,13 +412,13 @@ t.test(X1CEFI_P_FX_SS ~ Group, data=df1)
 t.test(X1CEFI_P_WM_SS ~ Group, data=df1)
 t.test(X1CEFI_T_AT_SS ~ Group, data=df1) # * significant difference
 describeBy(df1$X1CEFI_T_AT_SS, df1$Group)
-mes(96.73, 109.52, 13.41, 14.66, 50, 55) ### Cohen's d 
+mes(96.73, 109.52, 13.41, 14.66, 26, 29) ### Cohen's d 
 t.test(X1CEFI_T_FX_SS ~ Group, data=df1)# * significant difference
 describeBy(df1$X1CEFI_T_FX_SS, df1$Group)
-mes(0.54, 0.67, 0.2, 0.22, 50, 55) ### Cohen's d 
+mes(100.69, 110.55, 13.94, 14.62, 26, 29) ### Cohen's d 
 t.test(X1CEFI_T_WM_SS ~ Group, data=df1)# * significant difference
 describeBy(df1$X1CEFI_T_WM_SS, df1$Group)
-mes(0.54, 0.67, 0.2, 0.22, 50, 55) ### Cohen's d 
+mes(97.35, 108.24, 12.7, 14.12, 26, 29) ### Cohen's d 
 
 
 ## Initial difference between groups p-value adjustment
@@ -419,7 +426,7 @@ p <- c(.485, .809, .064, .580, .575, .937, .750, .172, .537, .194, .043, .009, .
 p.adjust(p, method = "holm")
 
 ## Initial difference between groups p-value adjustment
-p <- c(.148, .068, .290, .001, .013, .004) ### CEFI obs
+p <- c(.001, .013, .004) ### CEFI obs for teacher
 p.adjust(p, method = "holm")
 
 
@@ -451,6 +458,7 @@ mes(45.21, 51.61, 15.13, 14.31, 50, 50) ### Cohen's d
 ### ES Cohen's d = -0.43 [-0.84, -0.03]
 
 ### So the control group improved too...
+
 
 
 
@@ -493,9 +501,10 @@ rm("df1C","df1E","InhibitionT1C","InhibitionT1E","ShiftingT1C","ShiftingT1E","wm
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #    *** CFA Iterative Process ***-----------------------------------------
-# 20. CFA data creation ----------------------------------------------
+# 12. CFA data creation ----------------------------------------------
 df1CFA<-df1[,7:58] ### time 1
 df1CFA2<-df1[,59:110] ### time 2
 df1CFA3<-df1[,111:162] ### time 3
@@ -517,7 +526,7 @@ write.csv(df1CFA, "df1CFA.csv")
 citation("lavaan")
 
 
-# 21. CFA Iterative process -----------------------------
+# 13. CFA Iterative process -----------------------------
 ### ITERATIVE PROCESS OF REFINING MODEL...
 
 ### this is the fit indices I am after
@@ -626,7 +635,7 @@ rm("CFA.model.D","CFA.model.A.fit","CFA.model.B.fit","CFA.model.C.fit","CFA.mode
 
 
 
-# 22. CFA model T1 - T3 -----------------------------------------------------
+# 14. CFA model T1 - T3 -----------------------------------------------------
 
 ### MODEL CREATION
 ### different models
@@ -727,7 +736,7 @@ rm("CFA.model.1factor","CFA.model.3factor","CFA.model.shiftEF","CFA.model.inhibE
 
 
 
-# 23. Path Model for CFA T1 -----------------------------------------------------------
+# 15. Path Model for CFA T1 -----------------------------------------------------------
 par(mfrow=c(1,1))
 analyzeModel <- '
 EF =~ A6 + B3 + D3 + E5 + F3
@@ -755,7 +764,7 @@ rm("analyzeModel")
 
 
 
-# 24. A. SimSEM -----------------------------------------------------------
+# 16. A. SimSEM -----------------------------------------------------------
 citation(package = "simsem")
 ### Use the path model output to place here:
 popModel <- '
@@ -895,7 +904,7 @@ rm("rmsea0","rmseaa","d","alpha","desired","pow","n","foo","newn","interval","po
 
 
 
-# 25. Data Tidying & Removal -----------------------------------------------
+# 17. Data Tidying & Removal -----------------------------------------------
 ### let's remove the unnecessary columns as a result of CFA
 df1Final <- df1[, -c(7:11,13:14,16:27,29:34,36:45,47:50,52,53,55,56,58:63,65:66,68:79,81:86,88:97,99:102,104,105,107,108,110:115,117:118,120:131,133:138,140:149,151:154,156,157,159,160,162)]
 write.csv(df1Final,"df1Final.csv")
@@ -927,9 +936,7 @@ write.csv(df1FinalLong,"df1FinalLong.csv")
 
 
 
-# 25 (b). Correlation among individual EF measures ------------------------------------------------------
-
-### THe output from JAMOVI produced nice looking tables - possibly better to use these?
+# 18. Correlation among individual EF measures ------------------------------------------------------
 
 # x is a matrix containing the data
 # method : correlation method. "pearson"" or "spearman"" is supported
@@ -988,7 +995,8 @@ htmlTable(EFindCorr)
 rm("df1FinalRem")
 
 
-# 25 (c). Test-retest reliability (ICC) ------------------------------------------------------
+
+# 19. Test-retest reliability (ICC) ------------------------------------------------------
 ### 
 ### intraclass correlation coefficient
 ### have calculated ICC as a whole and for groups
@@ -997,75 +1005,76 @@ predictedC <- subset(predicted, predicted$Group == "Ctrl")
 df1E <- subset(df1, df1$Group == "Exp.")
 df1C <- subset(df1, df1$Group == "Ctrl")
 
+
 ### BY GROUPS ###
 ### Factor Scores
-icc(predictedC[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.77
-icc(predictedE[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.828
-icc(predictedC[,c(9,11,13)], model = "oneway") ## WM Score: 0.713
-icc(predictedE[,c(9,11,13)], model = "oneway") ## WM Score: 0.753
+irr::icc(predictedC[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.77
+irr::icc(predictedE[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.828
+irr::icc(predictedC[,c(9,11,13)], model = "oneway") ## WM Score: 0.713
+irr::icc(predictedE[,c(9,11,13)], model = "oneway") ## WM Score: 0.753
 
 
 ### Individual EF Measures
 ### Combined EF Tasks
-icc(df1C[,c(12,64,116)], model = "oneway") ## CLR: 0.249
-icc(df1E[,c(12,64,116)], model = "oneway") ## CLR: 0.439
-icc(df1C[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.499
-icc(df1E[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.588
-icc(df1C[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.191
-icc(df1E[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.402
-icc(df1C[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.222
-icc(df1E[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.403
-icc(df1C[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.415
-icc(df1E[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.602
+irr::icc(df1C[,c(12,64,116)], model = "oneway") ## CLR: 0.249
+irr::icc(df1E[,c(12,64,116)], model = "oneway") ## CLR: 0.439
+irr::icc(df1C[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.499
+irr::icc(df1E[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.588
+irr::icc(df1C[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.191
+irr::icc(df1E[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.402
+irr::icc(df1C[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.222
+irr::icc(df1E[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.403
+irr::icc(df1C[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.415
+irr::icc(df1E[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.602
 
 ### WM Tasks
-icc(df1C[,c(51,103,155)], model = "oneway") ## Operation Span: 0.338
-icc(df1E[,c(51,103,155)], model = "oneway") ## Operation Span: 0.242
-icc(df1C[,c(54,106,158)], model = "oneway") ## Reading Span: 0.36
-icc(df1E[,c(54,106,158)], model = "oneway") ## Reading Span: 0.662
-icc(df1C[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.466
-icc(df1E[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.239
+irr::icc(df1C[,c(51,103,155)], model = "oneway") ## Operation Span: 0.338
+irr::icc(df1E[,c(51,103,155)], model = "oneway") ## Operation Span: 0.242
+irr::icc(df1C[,c(54,106,158)], model = "oneway") ## Reading Span: 0.36
+irr::icc(df1E[,c(54,106,158)], model = "oneway") ## Reading Span: 0.662
+irr::icc(df1C[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.466
+irr::icc(df1E[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.239
 ### Other Tasks
-icc(df1C[,c(163:165)], model = "oneway") ## RT: 0.509
-icc(df1E[,c(163:165)], model = "oneway") ## RT: 0.442
+irr::icc(df1C[,c(163:165)], model = "oneway") ## RT: 0.509
+irr::icc(df1E[,c(163:165)], model = "oneway") ## RT: 0.442
 
 ### Far-transfer tasks
-icc(df1C[,c(166:168)], model = "oneway") ## NAI: 0.63
-icc(df1C[,c(169:171)], model = "oneway") ## PATm: 0.562
-icc(df1C[,c(172:174)], model = "oneway") ## PATr: 0.576
-icc(df1E[,c(166:168)], model = "oneway") ## NAI: 0.617
-icc(df1E[,c(169:171)], model = "oneway") ## PATm: 0.747
-icc(df1E[,c(172:174)], model = "oneway") ## PATr: 0.63
+irr::icc(df1C[,c(166:168)], model = "oneway") ## NAI: 0.63
+irr::icc(df1C[,c(169:171)], model = "oneway") ## PATm: 0.562
+irr::icc(df1C[,c(172:174)], model = "oneway") ## PATr: 0.576
+irr::icc(df1E[,c(166:168)], model = "oneway") ## NAI: 0.617
+irr::icc(df1E[,c(169:171)], model = "oneway") ## PATm: 0.747
+irr::icc(df1E[,c(172:174)], model = "oneway") ## PATr: 0.63
 
 ### Behavioural Reports (Parents)
-icc(df1C[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.424
-icc(df1C[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.438
-icc(df1C[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.551
-icc(df1E[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.505
-icc(df1E[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.341
-icc(df1E[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.564
+irr::icc(df1C[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.424
+irr::icc(df1C[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.438
+irr::icc(df1C[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.551
+irr::icc(df1E[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.505
+irr::icc(df1E[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.341
+irr::icc(df1E[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.564
 ### Behavioural Reports (Teachers)
 ### T1 v T2
-icc(df1C[,c(193,196)], model = "oneway") ## CEFItAT: 0.746
-icc(df1C[,c(194,197)], model = "oneway") ## CEFItFx: 0.672
-icc(df1C[,c(195,198)], model = "oneway") ## CEFItWM: 0.698
-icc(df1E[,c(193,196)], model = "oneway") ## CEFItAT: 0.675
-icc(df1E[,c(194,197)], model = "oneway") ## CEFItFx: 0.539
-icc(df1E[,c(195,198)], model = "oneway") ## CEFItWM: 0.711
+irr::icc(df1C[,c(193,196)], model = "oneway") ## CEFItAT: 0.746
+irr::icc(df1C[,c(194,197)], model = "oneway") ## CEFItFx: 0.672
+irr::icc(df1C[,c(195,198)], model = "oneway") ## CEFItWM: 0.698
+irr::icc(df1E[,c(193,196)], model = "oneway") ## CEFItAT: 0.675
+irr::icc(df1E[,c(194,197)], model = "oneway") ## CEFItFx: 0.539
+irr::icc(df1E[,c(195,198)], model = "oneway") ## CEFItWM: 0.711
 ### T2 v T3
-icc(df1C[,c(196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.614
-icc(df1C[,c(197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.465
-icc(df1C[,c(198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.358
-icc(df1E[,c(196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.514
-icc(df1E[,c(197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.417
-icc(df1E[,c(198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.481
+irr::icc(df1C[,c(196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.614
+irr::icc(df1C[,c(197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.465
+irr::icc(df1C[,c(198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.358
+irr::icc(df1E[,c(196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.514
+irr::icc(df1E[,c(197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.417
+irr::icc(df1E[,c(198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.481
 ### T1, T2, T3
-icc(df1C[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.705
-icc(df1C[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.594
-icc(df1C[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.562
-icc(df1E[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.61
-icc(df1E[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.508
-icc(df1E[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.529
+irr::icc(df1C[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.705
+irr::icc(df1C[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.594
+irr::icc(df1C[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.562
+irr::icc(df1E[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.61
+irr::icc(df1E[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.508
+irr::icc(df1E[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.529
 
 
 
@@ -1076,60 +1085,60 @@ icc(df1E[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.5
 ### ALL PARTICIPANTS ALL TOGETHER ### 
 ### Factor Scores
 ### all participants together
-icc(predicted[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.816
-icc(predicted[,c(9,11,13)], model = "oneway") ## WM Score: 0.761
+irr::icc(predicted[,c(8,10,12)], model = "oneway") ## Combined EF Score: 0.816
+irr::icc(predicted[,c(9,11,13)], model = "oneway") ## WM Score: 0.761
 
 ### Individual EF Measures
 ### Combined EF Tasks
 ### All participants together
-icc(df1[,c(12,64,116)], model = "oneway") ## CLR: 0.342
-icc(df1[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.553
-icc(df1[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.287
-icc(df1[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.306
-icc(df1[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.55
+irr::icc(df1[,c(12,64,116)], model = "oneway") ## CLR: 0.342
+irr::icc(df1[,c(15,67,119)], model = "oneway") ## ConnSwitch: 0.553
+irr::icc(df1[,c(28,80,132)], model = "oneway") ## Flanker Incon Acc: 0.287
+irr::icc(df1[,c(35,87,139)], model = "oneway") ## NoGo Accuracy: 0.306
+irr::icc(df1[,c(46,98,150)], model = "oneway") ## NStroop Incon RT: 0.55
 ### WM Tasks
-icc(df1[,c(51,103,155)], model = "oneway") ## Operation Span: 0.317
-icc(df1[,c(54,106,158)], model = "oneway") ## Reading Span: 0.57
-icc(df1[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.384
+irr::icc(df1[,c(51,103,155)], model = "oneway") ## Operation Span: 0.317
+irr::icc(df1[,c(54,106,158)], model = "oneway") ## Reading Span: 0.57
+irr::icc(df1[,c(57,109,161)], model = "oneway") ## Symmetry Span: 0.384
 ### Other Tasks
-icc(df1[,c(163:165)], model = "oneway") ## RT: 0.482
+irr::icc(df1[,c(163:165)], model = "oneway") ## RT: 0.482
 
 
 ### Far-transfer tasks
-icc(df1[,c(166:168)], model = "oneway") ## NAI: 0.628
-icc(df1[,c(169:171)], model = "oneway") ## PATm: 0.671
-icc(df1[,c(172:174)], model = "oneway") ## PATr: 0.605
+irr::icc(df1[,c(166:168)], model = "oneway") ## NAI: 0.628
+irr::icc(df1[,c(169:171)], model = "oneway") ## PATm: 0.671
+irr::icc(df1[,c(172:174)], model = "oneway") ## PATr: 0.605
 
 ### Behavioural Reports (Parents)
-icc(df1[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.462
-icc(df1[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.39
-icc(df1[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.558
+irr::icc(df1[,c(184,187,190)], model = "oneway") ## CEFIpAT: 0.462
+irr::icc(df1[,c(185,188,191)], model = "oneway") ## CEFIpFx: 0.39
+irr::icc(df1[,c(186,189,192)], model = "oneway") ## CEFIpWM: 0.558
 ### Behavioural Reports (Teachers)
 ### T1 v T2
-icc(df1[,c(193,196)], model = "oneway") ## CEFItAT: 0.758
-icc(df1[,c(194,197)], model = "oneway") ## CEFItFx: 0.668
-icc(df1[,c(195,198)], model = "oneway") ## CEFItWM: 0.744
+irr::icc(df1[,c(193,196)], model = "oneway") ## CEFItAT: 0.758
+irr::icc(df1[,c(194,197)], model = "oneway") ## CEFItFx: 0.668
+irr::icc(df1[,c(195,198)], model = "oneway") ## CEFItWM: 0.744
 ### T2 v T3
-icc(df1[,c(196,199)], model = "twoway") ## CEFItAT: 0.623
-icc(df1[,c(197,200)], model = "twoway") ## CEFItFx: 0.507
-icc(df1[,c(198,201)], model = "twoway") ## CEFItWM: 0.464
+irr::icc(df1[,c(196,199)], model = "twoway") ## CEFItAT: 0.623
+irr::icc(df1[,c(197,200)], model = "twoway") ## CEFItFx: 0.507
+irr::icc(df1[,c(198,201)], model = "twoway") ## CEFItWM: 0.464
 ### T1, T2, T3
-icc(df1[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.708
-icc(df1[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.607
-icc(df1[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.594
+irr::icc(df1[,c(193,196,199)], model = "twoway", type = "agreement") ## CEFItAT: 0.708
+irr::icc(df1[,c(194,197,200)], model = "twoway", type = "agreement") ## CEFItFx: 0.607
+irr::icc(df1[,c(195,198,201)], model = "twoway", type = "agreement") ## CEFItWM: 0.594
 
 
 ### Original EF Measures that were dropped as part of CFA
-icc(df1[,c(10,62,114)], model = "oneway") ## PE: 0.27
-icc(df1[,c(20,72,124)], model = "oneway") ## SwitchErr2Feat: 0.301
-icc(df1[,c(22,74,126)], model = "oneway") ## SwitchDiffError: -0.022
-icc(df1[,c(27,79,131)], model = "oneway") ## Flanker CC RT: -0.052
-icc(df1[,c(43,95,147)], model = "oneway") ## Go RT average: 0.4
-icc(df1[,c(49,101,153)], model = "oneway") ## NStroop Incon Acc: 0.402
+irr::icc(df1[,c(10,62,114)], model = "oneway") ## PE: 0.27
+irr::icc(df1[,c(20,72,124)], model = "oneway") ## SwitchErr2Feat: 0.301
+irr::icc(df1[,c(22,74,126)], model = "oneway") ## SwitchDiffError: -0.022
+irr::icc(df1[,c(27,79,131)], model = "oneway") ## Flanker CC RT: -0.052
+irr::icc(df1[,c(43,95,147)], model = "oneway") ## Go RT average: 0.4
+irr::icc(df1[,c(49,101,153)], model = "oneway") ## NStroop Incon Acc: 0.402
 
 
 
-# 26. Data for LCM ----------------------------------------------
+# 20. Data for LCM ----------------------------------------------
 df1CFA<-df1[,7:58] ### time 1
 df1CFA2<-df1[,59:110] ### time 2
 df1CFA3<-df1[,111:162] ### time 3
@@ -1151,7 +1160,7 @@ fit = c("df","chisq.scaled","pvalue.scaled","aic","cfi.robust","tli.robust","rms
 
 
 
-# 27. LCM - Iterative process -----------------------------
+# 21. LCM - Iterative process -----------------------------
 ### **try iterative approach as in Beaujean (2014) ###
 ### model for a mean latent intercept and constrained residual variances
 CFA.model.A <- '
@@ -1549,10 +1558,11 @@ lavInspect(CFA.model.A.fit, "cov.lv")
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #  *** DATA ANALYSIS ***-----------------------------------------
 
-# 26. Creation of CFA Factor Scores (Near-Transfer) -----------------------------------------
+# 22. Creation of CFA Factor Scores (Near-Transfer) -----------------------------------------
 
 #### predicted scores 2 factor...
 predictT1 <- lavPredict(CFA.model.wmEF.fit)
@@ -1599,8 +1609,9 @@ mes(-0.25, 0.23, 0.86, 0.77, 50, 55) ### Cohen's d
 
 
 
-# 26 (b). Creating Difference Scores ----------------------------------------------
+# 23. Creating Difference Scores ----------------------------------------------
 ### This will allow us to determine if participants scoring higher on achievement tests at T1 scored greater gains (high positive correlation) or whether lower ability students scored greater gains (high negative correlation).
+### change (or gain) scores have been used before. This study follows the process of Karbach, Strobach  Schubert (2015) where these change scores are used as raw values. However, these are sometimes standardised (change score divided by standard deviation of the whole sample at pretest e.g. Jaeggi et al. 2011, Studer-Luethi et al. 2016) or are used to regress on T1 scores (e.g. Dahlin, 2011)
 diffScores <- predicted
 ### create time 2 - time 1 scores
 EF2EF1 <- diffScores$EF_2 - diffScores$EF_1
@@ -1625,10 +1636,34 @@ write.csv(diffScores, "diffscores.csv")
 
 
 
+### Let's also create difference scores that are 'standardised' as per Jaeggi et al etc.
+diffScoresSTD <- predicted
+### create time 2 - time 1 scores
+EF2EF1std <- (diffScores$EF_2 - diffScores$EF_1)/sd(diffScores$EF_1)
+diffScoresSTD <- add_column(diffScoresSTD, EF2EF1std, .after = "Grade")
+WM2WM1std <- (diffScores$wm_2 - diffScores$wm_1)/sd(diffScores$wm_1)
+diffScoresSTD <- add_column(diffScoresSTD, WM2WM1std, .after = "EF2EF1std")
+### create other two scores required (time 3 - time 1)
+EF3EF1std <- (diffScores$EF_3 - diffScores$EF_1)/sd(diffScores$EF_1)
+diffScoresSTD <- add_column(diffScoresSTD, EF3EF1std, .after = "WM2WM1std")
+WM3WM1std <- (diffScores$wm_3 - diffScores$wm_1)/sd(diffScores$wm_1)
+diffScoresSTD <- add_column(diffScoresSTD, WM3WM1std, .after = "EF3EF1std")
+rm("EF2EF1std", "WM2WM1std","EF3EF1std","WM3WM1std")
+
+### add in the far-transfer difference scores
+NAI2NAI1std <- (diffScores$NAI_2 - diffScores$NAI_1)/sd(diffScores$NAI_1)
+diffScoresSTD <- add_column(diffScoresSTD, NAI2NAI1std, .after = "ITIM")
+PATm2PATm1std <- (diffScores$PATmScale_2 - diffScores$PATmScale_1)/sd(diffScores$PATmScale_1)
+diffScoresSTD <- add_column(diffScoresSTD, PATm2PATm1std, .after = "NAI2NAI1std")
+PATr2PATr1std <- (diffScores$PATrScale_2 - diffScores$PATrScale_1)/sd(diffScores$PATrScale_1)
+diffScoresSTD <- add_column(diffScoresSTD, PATr2PATr1std, .after = "PATm2PATm1std")
+write.csv(diffScoresSTD, "diffscoresSTD.csv")
 
 
 
-# 26 (c). Box Plots of Near-Transfer & Far-Transfer-----------------------------------------
+
+
+# 24. Box Plots of Near-Transfer & Far-Transfer-----------------------------------------
 
 ### Plots
 level_order <- c('Ctrl', 'Exp.') #this vector might be useful for other plots/analyses
@@ -1785,7 +1820,7 @@ ggplot(data = predictedLong, aes(x = time, y = wm, group = ID)) +
 
 
 
-# 26 (d) Line Plots of Near-Transfer & Far-Transfer-------------------
+# 25. Line Plots of Near-Transfer & Far-Transfer-------------------
 ### Need to create a new dataframe of summary data:
 ### gF
 x1<-describeBy(predicted$NAI_1, predicted$Group)
@@ -1869,7 +1904,7 @@ plot(unpaired_mean_diff)
 
 
 
-# 26 (d) Box Plots of Transfer Measures by Grade -----------------------------------------
+# 26. Box Plots of Transfer Measures by Grade -----------------------------------------
 
 ### Now look at them separated by Grade
 ### Boxplot EF
@@ -2020,7 +2055,7 @@ ggplot(predictedLong, aes(factor(Intervention, level = level_order), CEFI.T.WM.S
 
 
 
-# 26 (e) Box Plots of Transfer by Grade (Time-separated) ------------------------------------
+# 27. Box Plots of Transfer by Grade (Time-separated) ------------------------------------
 
 ### Separate Grade plots (facets) for Time data...
 ### PATm
@@ -2082,7 +2117,7 @@ ggplot(predictedLong, aes(factor(Intervention, level = level_order), CEFI.T.WM.S
 
 
 
-# 26 (f) Box Plots of Transfer by Wave  ------------------------------------
+# 28. Box Plots of Transfer by Wave  ------------------------------------
 
 ### Separate Wave plots (facets) for Grade data...
 ### Plots
@@ -2169,7 +2204,7 @@ ggplot(predictedLong, aes(factor(Intervention, level = level_order), CEFI.T.WM.S
 
 
 
-# 27. CFA Factor Scores - Multivariate Normality Testing ---------------------------------
+# 29. CFA Factor Scores - Multivariate Normality Testing ---------------------------------
 ### Create subset of predicted based upon group
 predictedE <- subset(predicted, predicted$Group == "Exp.")
 predictedC <- subset(predicted, predicted$Group == "Ctrl")
@@ -2203,7 +2238,7 @@ rm("predictedC1","predictedC2","predictedC3")
 
 
 
-# 28. CFA Factor Scores - Correlations & Plots ---------------------------------
+# 30. CFA Factor Scores - Correlations & Plots ---------------------------------
 ### CORRELATIONS-FACTOR SCORES
 ### correlation of predicted scores with achievement tests?
 apa.cor.table(predicted[,c(8:9,23:25)], filename = "Factor_Table.doc", table.number = 1)
@@ -2300,9 +2335,10 @@ cor.test(predicted$wm_3, df1$ITIM, use = "p")
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #    *** ANCOVA: Near-Transfer ***-----------------------------------------
-# 29. Near-Transfer ANCOVA - Parametric & Robust --------------------------------------
+# 31. Near-Transfer ANCOVA - Parametric & Robust --------------------------------------
 ### Time 2
 ### Time 2 vs Time 1
 ###
@@ -2334,7 +2370,7 @@ sstable
 ### alternative method (using the sjstats package)
 sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
 sjstats::anova_stats(model1)
-
+ 
 par(mfrow=c(2,2))
 for(i in 1:4)plot(model1, which=i)
 Anova(aov(EF_2 ~ EF_1 * Group, data = predicted), type = "III") ## no interaction present
@@ -2512,102 +2548,6 @@ ggplot(data = predicted, mapping = aes(x = wm_1, y = wm_3, color = Group)) +
   theme_apa()
 
 
-# * Processing Speed * ####
-### Reaction Time T2 vs T1 ###
-### Not Significant
-model1 <- lm(RTaverage_2 ~ RTaverage_1 + Group, data = predicted)
-model2 <- lm(RTaverage_2 ~ RTaverage_1 * Group, data = predicted)
-simpleModel <- lm(RTaverage_2 ~ Group, data = predicted)
-summ(model1)
-summ(model2)
-summ(simpleModel)
-### test assumption of homogeneity of slopes 
-anova(model1, model2) ### no problems here
-### test assumption of normal distribution of residuals
-par(mfrow=c(1,1))
-hist(residuals(model1), col="darkgray")
-plot(fitted(model1), residuals(model1))
-### test assumption of homogeneity of variance
-leveneTest(predicted$RTaverage_2 ~ predicted$Group, center = mean) ## Not significant
-# getting the sums squared for each effect using the Anova function from the car package
-sstable <- car::Anova(lm(RTaverage_2 ~ RTaverage_1 + Group, data = predicted), type = 3)
-# partial eta squared:
-sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
-sstable
-### alternative method (using the sjstats package)
-sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
-
-adjustedMeans <- effect("Group", model1, se = TRUE)
-summary(adjustedMeans)
-adjustedMeans$se
-summary(glht(model1, linfct = mcp(Group = "Tukey")))
-confint(glht(model1, linfct = mcp(Group = "Tukey")))
-describeBy(predicted$RTaverage_2, predicted$Group)
-
-### Robust
-ancova(predicted$RTaverage_2 ~ predicted$RTaverage_1 + predicted$Group) ### no significant differences
-ggplot(data = predicted, mapping = aes(x = RTaverage_1, y = RTaverage_2, color = Group)) +
-  geom_jitter() +
-  geom_smooth(method = 'lm', se=FALSE) +
-  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
-  labs (x = "Reaction Time T1", y = "Reaction Time T2") +
-  theme_apa()
-
-
-
-### Reaction Time T3 vs T1
-model1 <- lm(RTaverage_3 ~ RTaverage_1 + Group, data = predicted)
-model2 <- lm(RTaverage_3 ~ RTaverage_1 * Group, data = predicted)
-simpleModel <- lm(RTaverage_3 ~ Group, data = predicted)
-summ(model1)
-summ(model2)
-summ(simpleModel)
-### test assumption of homogeneity of slopes 
-anova(model1, model2) ### no problems here
-### test assumption of normal distribution of residuals
-par(mfrow=c(1,1))
-hist(residuals(model1), col="darkgray")
-plot(fitted(model1), residuals(model1))
-### test assumption of homogeneity of variance
-leveneTest(predicted$RTaverage_3 ~ predicted$Group, center = mean) ## Not significant
-# getting the sums squared for each effect using the Anova function from the car package
-sstable <- car::Anova(lm(RTaverage_3 ~ RTaverage_1 + Group, data = predicted), type = 3)
-# partial eta squared:
-sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
-sstable
-### alternative method (using the sjstats package)
-sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
-
-adjustedMeans <- effect("Group", model1, se = TRUE)
-summary(adjustedMeans)
-adjustedMeans$se
-summary(glht(model1, linfct = mcp(Group = "Tukey")))
-confint(glht(model1, linfct = mcp(Group = "Tukey")))
-describeBy(predicted$RTaverage_3, predicted$Group)
-
-### Robust
-ancova(predicted$RTaverage_3 ~ predicted$RTaverage_1 + predicted$Group) ### no significant differences
-ggplot(data = predicted, mapping = aes(x = RTaverage_1, y = RTaverage_3, color = Group)) +
-  geom_jitter() +
-  geom_smooth(method = 'lm', se=FALSE) +
-  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
-  labs (x = "Reaction Time T1", y = "Reaction Time T3") +
-  theme_apa()
-
-
-
-# For Fry & Hale's (1996) developmental cascade theory for PS we should see an improvement in WM if we see an improvment in PS.
-### Did PS change from T1 to T2?
-yuend(predicted$RTaverage_1, predicted$RTaverage_2, tr = 0.2)
-psych::describe(predicted$RTaverage_1)
-psych::describe(predicted$RTaverage_2)
-mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d 
-
-### What about from T1 to T3?
-yuend(predicted$RTaverage_1, predicted$RTaverage_3)
-psych::describe(predicted$RTaverage_1)
-psych::describe(predicted$RTaverage_3)
-mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d 
 
 
 
@@ -2616,8 +2556,7 @@ mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d
 
 
 
-
-# 29 (a). Near-Transfer - Grade Interactions ------------------------
+# 32. Near-Transfer - Grade Interactions ------------------------
 
 ### 2-way ANOVAs for interaction of Group / Covariate
 IntNames <- c('0' = "Control Group", '1' = "Experimental Group")
@@ -2708,7 +2647,7 @@ Anova(aov(EF_2 ~ EF_1 * Group, data = predicted), type = "III")
 
 
 
-# 29 (b). Multivariate Removal of Outliers in Factor Scores ---------------------------------
+# 33. Multivariate Removal of Outliers in Factor Scores ---------------------------------
 ### Create subset of predicted based upon group
 predictedE <- subset(predicted, predicted$Group == "Exp.")
 predictedC <- subset(predicted, predicted$Group == "Ctrl")
@@ -2773,7 +2712,7 @@ table(predictedOR$Group)
 
 
 
-# 29 (c). Plots of Near-Transfer (outlier removed) --------------------------------------
+# 34. Plots of Near-Transfer (outlier removed) --------------------------------------
 
 
 ### Plots
@@ -2824,7 +2763,7 @@ ggplot(data = predictedORLong, aes(x = time, y = wm, group = ID)) +
 
 
 
-# 29 (d). Near-Transfer (outlier removed) - ANCOVAs --------------------------------------
+# 35. Near-Transfer (outlier removed) - ANCOVAs --------------------------------------
 ## ANCOVA
 
 ### EF T2 vs T1
@@ -2976,7 +2915,7 @@ describeBy(predictedOR$wm_3, predictedOR$Group)
 
 
 
-### 29 (e). Near-Transfer (outlier removed) - Interactions -------------------
+### 36. Near-Transfer (outlier removed) - Interactions -------------------
 ### 2-way ANOVAs for interaction of Group / Covariate
 ### none of these are significant - it seems that the outliers were the ones that impacted an interaction
 summ(lm(EF_2 ~ EF_1 * Age.Yr, data = predictedOR)) 
@@ -3056,13 +2995,812 @@ Anova(aov(EF_2 ~ EF_1 * Group, data = predictedOR), type = "III")
 
 
 
+# *** CST Data analysed individually ***  -------------------------------------------
+# *** CST Data removed listwise ***  -------------------------------------------
+# 37. Near-Transfer (CSTs) - plots -------------------------------------------
+
+### Line graphs
+### Operation Span
+x1<-describeBy(df1$X1OSPANpartialscore, df1$Group)
+x2<-describeBy(df1$X2OSPNpartialscore, df1$Group)
+x3<-describeBy(df1$X3OSPNpartialscore, df1$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Operation Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Operation Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+### Reading Span
+x1<-describeBy(df1$X1RSPANpartialscore, df1$Group)
+x2<-describeBy(df1$X2RSPANpartialscore, df1$Group)
+x3<-describeBy(df1$X3RSPANpartialscore, df1$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Reading Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Reading Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+
+### Symmetry Span
+x1<-describeBy(df1$X1SYMSPANpartialscore, df1$Group)
+x2<-describeBy(df1$X2SYMSPANpartialscore, df1$Group)
+x3<-describeBy(df1$X3SYMSPANpartialscore, df1$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Reading Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Symmetry Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+
+
+
+
+# 38. Near-Transfer (CSTs) - Operation Span -------------------------------------------
+
+
+### recap on baseline differences:
+### Individual Working Memory measures
+t.test(X1OSPANpartialscore ~ Group, data=df1)# * significant difference
+describeBy(df1$X1OSPANpartialscore, df1$Group)
+mes(0.54, 0.67, 0.2, 0.22, 39, 48) ### Cohen's d = -0.62 [ -1.05, -0.18]
+t.test(X1RSPANpartialscore ~ Group, data=df1)# * significant difference
+describeBy(df1$X1RSPANpartialscore, df1$Group)
+mes(0.57, 0.67, 0.23, 0.19, 44, 46) ### Cohen's d  = -0.48 [ -0.9, -0.05]
+t.test(X1SYMSPANpartialscore ~ Group, data=df1) # no sig difference
+
+
+                                  ### ANCOVAs ###
+
+
+                                  ### OPERATION SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+model1 <- lm(X2OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1)
+model2 <- lm(X2OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X2OSPNpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X2OSPNpartialscore ~ df1$Group, center = mean) ## *** significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X2OSPNpartialscore, df1$Group)
+
+
+### Robust
+### remember that the p-value does not take into account multiple testing
+### so need to multiply each value by 5 (number of tests taken)
+ancova(df1$X2OSPNpartialscore ~ df1$X1OSPANpartialscore + df1$Group) ### no significant differences
+p <- c(.0879, .1004, .0872, .1884, .0336)
+p.adjust(p, method = "holm")
+ggplot(data = df1, mapping = aes(x = X1OSPANpartialscore, y = X2OSPNpartialscore, color = Group)) +
+  geom_jitter() +
+  geom_smooth(method = 'lm', se=FALSE) +
+  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
+  labs (x = "Operation Span Score T1", y = "Operation Span Score T2") +
+  geom_vline(xintercept = c(0.48, 0.64, 0.72, 0.8, 0.88), col = "blue", lty=3) +
+  theme_apa()
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+model1 <- lm(X3OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1)
+model2 <- lm(X3OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X3OSPNpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X3OSPNpartialscore ~ df1$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X3OSPNpartialscore, df1$Group)
+
+
+
+
+# 39. Near-Transfer (CSTs) - Reading Span -------------------------------------------
+
+                                    ### READING SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+model1 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1)
+model2 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X2RSPANpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X2RSPANpartialscore ~ df1$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X2RSPANpartialscore, df1$Group)
+
+### Calculate the difference and effect size for significant effect of Group
+model1 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1)
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+### Trying to easily calc sample size...
+df1copy <- df1[!(df1$X1RSPANpartialscore=="" | df1$X2RSPANpartialscore==""),]
+count(df1copy, df1copy$Group == "Exp.") ### now have exp n = 40 and control n = 40
+n <- c(40,40) ### sample size
+adjustedMeans$se*sqrt(n) ### standard deviation
+mes(0.640, 0.736, 0.138, 0.138, 40, 40) ### Cohen's d
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X2RSPANpartialscore, df1$Group)
+
+
+
+
+
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+model1 <- lm(X3RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1)
+model2 <- lm(X3RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X3RSPANpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X3RSPANpartialscore ~ df1$Group, center = mean) ## non- significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X3RSPANpartialscore, df1$Group)
+
+
+
+
+
+
+
+# 40. Near-Transfer (CSTs) - Symmetry Span -------------------------------------------
+
+                                  ### SYMMETRY SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+model1 <- lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1)
+model2 <- lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X2SYMSPANpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X2SYMSPANpartialscore ~ df1$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X2SYMSPANpartialscore, df1$Group)
+
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+model1 <- lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1)
+model2 <- lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1)
+simpleModel <- lm(X3SYMSPANpartialscore ~ Group, data = df1)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ###  problems here!!
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1$X3SYMSPANpartialscore ~ df1$Group, center = mean) ## *** significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1), type = "III") ## interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1$X3SYMSPANpartialscore, df1$Group)
+
+
+### Robust
+### remember that the p-value does not take into account multiple testing
+### so need to multiply each value by 5 (number of tests taken)
+ancova(df1$X3SYMSPANpartialscore ~ df1$X1SYMSPANpartialscore + df1$Group) ### no significant differences
+p <- c(.3512, .8597, .6071, .2173, .1589)
+p.adjust(p, method = "holm")
+ggplot(data = df1, mapping = aes(x = X1SYMSPANpartialscore, y = X3SYMSPANpartialscore, color = Group)) +
+  geom_jitter() +
+  geom_smooth(method = 'lm', se=FALSE) +
+  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
+  labs (x = "EF Factor Score T1", y = "EF Factor Score T2") +
+  geom_vline(xintercept = c(0.285, 0.428, 0.571, 0.642, 0.786), col = "blue", lty=3) +
+  theme_apa()
+
+
+
+
+
+
+# *** CST Data not removed ***  -------------------------------------------
+df1NR <- df1NR[!(df1NR$Train.Hr<9),] ### this removes 6 individual cases
+
+### Baseline comparisons
+### Individual Working Memory measures
+t.test(X1OSPANpartialscore ~ Group, data=df1NR)# * significant difference
+describeBy(df1NR$X1OSPANpartialscore, df1NR$Group)
+mes(0.52, 0.64, 0.21, 0.23, 50, 55) ### Cohen's d 
+
+t.test(X1RSPANpartialscore ~ Group, data=df1NR)# * significant difference
+describeBy(df1NR$X1RSPANpartialscore, df1NR$Group)
+mes(0.55, 0.65, 0.24, 0.19, 50, 54) ### Cohen's d 
+
+t.test(X1SYMSPANpartialscore ~ Group, data=df1NR)
+
+# 41. Near-Transfer (CSTs) - plots -------------------------------------------
+
+### Line graphs
+### Operation Span
+x1<-describeBy(df1NR$X1OSPANpartialscore, df1NR$Group)
+x2<-describeBy(df1NR$X2OSPNpartialscore, df1NR$Group)
+x3<-describeBy(df1NR$X3OSPNpartialscore, df1NR$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Operation Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Operation Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+### Reading Span
+x1<-describeBy(df1NR$X1RSPANpartialscore, df1NR$Group)
+x2<-describeBy(df1NR$X2RSPANpartialscore, df1NR$Group)
+x3<-describeBy(df1NR$X3RSPANpartialscore, df1NR$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Reading Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Reading Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+
+### Symmetry Span
+x1<-describeBy(df1NR$X1SYMSPANpartialscore, df1NR$Group)
+x2<-describeBy(df1NR$X2SYMSPANpartialscore, df1NR$Group)
+x3<-describeBy(df1NR$X3SYMSPANpartialscore, df1NR$Group)
+xWM <- data.frame("Group" = c("Control","Experimental"), "Time" = c(1, 1, 2, 2, 3, 3), "Test" = "Reading Span", "Mean" = c(x1$Ctrl$mean,x1$Exp.$mean,x2$Ctrl$mean,x2$Exp.$mean,x3$Ctrl$mean,x3$Exp.$mean), "SE" = c(x1$Ctrl$se, x1$Exp.$se, x2$Ctrl$se, x2$Exp.$se, x3$Ctrl$se, x3$Exp.$se))
+### WM line plot
+ggplot(xWM, aes(x=Time, y=Mean, group=Group, color=Group)) + 
+  geom_line() +
+  geom_point()+
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.05)) +
+  scale_y_continuous(name = "Symmetry Span", limits = c(0.4, 0.9), breaks=seq(0.4,0.9,0.1)) +
+  scale_x_continuous(breaks=seq(1,3,1)) 
+
+
+
+
+
+
+# 42. Near-Transfer (CSTs) - Operation Span -------------------------------------------
+
+
+### recap on baseline differences:
+### Individual Working Memory measures
+t.test(X1OSPANpartialscore ~ Group, data=df1NR)# * significant difference
+describeBy(df1NR$X1OSPANpartialscore, df1NR$Group)
+mes(0.52, 0.64, 0.21, 0.23, 50, 55) ### Cohen's d = -0.54 [ -0.94, -0.15]
+t.test(X1RSPANpartialscore ~ Group, data=df1NR)# * significant difference
+describeBy(df1NR$X1RSPANpartialscore, df1NR$Group)
+mes(0.55, 0.65, 0.24, 0.19, 50, 54) ### Cohen's d  = -0.46 [ -0.86, -0.07]
+t.test(X1SYMSPANpartialscore ~ Group, data=df1NR)
+
+
+                                          ### ANCOVAs ###
+
+
+                                        ### OPERATION SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+model1 <- lm(X2OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X2OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X2OSPNpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X2OSPNpartialscore ~ df1NR$Group, center = mean) ## *** significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X2OSPNpartialscore, df1NR$Group)
+
+
+### Robust
+### remember that the p-value does not take into account multiple testing
+### so need to multiply each value by 5 (number of tests taken)
+ancova(df1NR$X2OSPNpartialscore ~ df1NR$X1OSPANpartialscore + df1NR$Group) ### no significant differences
+p <- c(.0316, .0398, .0261, .0401, .0480)
+p.adjust(p, method = "holm")
+ggplot(data = df1NR, mapping = aes(x = X1OSPANpartialscore, y = X2OSPNpartialscore, color = Group)) +
+  geom_jitter() +
+  geom_smooth(method = 'lm', se=FALSE) +
+  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
+  labs (x = "Operation Span Score T1", y = "Operation Span Score T2") +
+  geom_vline(xintercept = c(0.24, 0.44, 0.64, 0.76, 0.88), col = "blue", lty=3) +
+  theme_apa()
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+### This shows a difference between groups for scores on T3 when accounting for T1 scores (CTRL > EXP)
+model1 <- lm(X3OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X3OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X3OSPNpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X3OSPNpartialscore ~ df1NR$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3OSPNpartialscore ~ X1OSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3OSPNpartialscore ~ X1OSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X3OSPNpartialscore, df1NR$Group)
+
+
+
+
+# 43. Near-Transfer (CSTs) - Reading Span -------------------------------------------
+
+### READING SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+### This shows a difference between groups for scores on T2 when accounting for T1 scores (CTRL > EXP)
+model1 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X2RSPANpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X2RSPANpartialscore ~ df1NR$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X2RSPANpartialscore, df1NR$Group)
+
+### Calculate the difference and effect size for significant effect of Group
+model1 <- lm(X2RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1NR)
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+### Trying to easily calc sample size...
+df1copy <- df1NR[!(df1NR$X1RSPANpartialscore=="" | df1NR$X2RSPANpartialscore==""),]
+count(df1copy, df1copy$Group == "Exp.") ### now have exp n = 40 and control n = 40
+n <- c(54,49) ### sample size
+adjustedMeans$se*sqrt(n) ### standard deviation
+mes(0.674, 0.743, 0.161, 0.146, 54, 49) ### Cohen's d
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X2RSPANpartialscore, df1NR$Group)
+
+
+
+
+
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+### This shows a difference between groups for scores on T3 when accounting for T1 scores (CTRL > EXP)
+model1 <- lm(X3RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X3RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X3RSPANpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X3RSPANpartialscore ~ df1NR$Group, center = mean) ## non- significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3RSPANpartialscore ~ X1RSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3RSPANpartialscore ~ X1RSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X3RSPANpartialscore, df1NR$Group)
+
+
+
+
+
+
+
+# 44. Near-Transfer (CSTs) - Symmetry Span -------------------------------------------
+
+### SYMMETRY SPAN ###
+
+### Time 2
+### Time 2 vs Time 1
+###
+### Operation Span T2 vs T1
+model1 <- lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X2SYMSPANpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X2SYMSPANpartialscore ~ df1NR$Group, center = mean) ## non significant
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+### Calculate the difference and effect size for significant effect of Group
+model1 <- lm(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1NR)
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X2SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1NR), type = "III") ## no interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+### Trying to easily calc sample size...
+df1copy <- df1NR[!(df1NR$X1SYMSPANpartialscore=="" | df1NR$X2SYMSPANpartialscore==""),]
+count(df1copy, df1copy$Group == "Exp.") ### now have exp n = 40 and control n = 40
+n <- c(55,50) ### sample size
+adjustedMeans$se*sqrt(n) ### standard deviation
+mes(0.583, 0.667, 0.196, 0.178, 55, 50) ### Cohen's d
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+
+
+
+### Time 3
+### Time 3 vs Time 1
+###
+### Operation Span T3 vs T1
+### This shows a difference between groups for scores on T3 when accounting for T1 scores (CTRL > EXP)
+model1 <- lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1NR)
+model2 <- lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1NR)
+simpleModel <- lm(X3SYMSPANpartialscore ~ Group, data = df1NR)
+summ(model1)
+summary(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ###  no problem here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(df1NR$X3SYMSPANpartialscore ~ df1NR$Group, center = mean) ## no problem
+
+# getting the sums squared for each effect using the Anova function from the car package
+# https://stats.stackexchange.com/questions/183026/r%C2%B2-of-ancova-mostly-driven-by-covariate
+sstable <- car::Anova(lm(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore + Group, data = df1NR), type = 3)
+# partial eta squared: https://www-sciencedirect-com.ezproxy1.library.usyd.edu.au/science/article/pii/S1747938X11000029
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+sjstats::anova_stats(model1)
+
+par(mfrow=c(2,2))
+for(i in 1:4)plot(model1, which=i)
+Anova(aov(X3SYMSPANpartialscore ~ X1SYMSPANpartialscore * Group, data = df1NR), type = "III") ## interaction present
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(df1NR$X3SYMSPANpartialscore, df1NR$Group)
+
+
+### Robust
+### remember that the p-value does not take into account multiple testing
+### so need to multiply each value by 5 (number of tests taken)
+ancova(df1NR$X3SYMSPANpartialscore ~ df1NR$X1SYMSPANpartialscore + df1NR$Group) ### no significant differences
+p <- c(.3512, .8597, .6071, .2173, .1589)
+p.adjust(p, method = "holm")
+ggplot(data = df1NR, mapping = aes(x = X1SYMSPANpartialscore, y = X3SYMSPANpartialscore, color = Group)) +
+  geom_jitter() +
+  geom_smooth(method = 'lm', se=FALSE) +
+  geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
+  labs (x = "EF Factor Score T1", y = "EF Factor Score T2") +
+  geom_vline(xintercept = c(0.285, 0.428, 0.571, 0.642, 0.786), col = "blue", lty=3) +
+  theme_apa()
 
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #  *** ANCOVA: Far-Transfer ***-----------------------------------------
-# 30. Far-Transfer ANCOVA - Parametric & Robust -------------------------------------------
+# 45. Far-Transfer ANCOVA - Parametric & Robust -------------------------------------------
 
 ### PAT Maths T2 vs T1
 ### Not Significant
@@ -3361,9 +4099,9 @@ ggplot(data = predicted, mapping = aes(x = NAI_1, y = NAI_3, color = Group)) +
 
 
 
-# 30 (b). Far-Transfer ANCOVA: Behavioural Reports  -------------------------------------------
+# 46. Far-Transfer ANCOVA: Behavioural Reports  -------------------------------------------
 
-### ...Parent  -------------------------------------------
+### (a) Parents  -------------------------------------------
 ### Parent: Inhibition T2 vs T1
 ### Not Significant
 model1 <- lm(CEFI.P.AT.SS_2 ~ CEFI.P.AT.SS_1 + Group, data = predicted)
@@ -3667,7 +4405,7 @@ ggplot(data = predicted, mapping = aes(x = CEFI.P.WM.SS_1, y = CEFI.P.WM.SS_3, c
 
 
 
-### ...Teacher  -------------------------------------------
+### (b) Teacher  -------------------------------------------
 ### Behaviour Reports - Teacher
 ### Teacher: Inhibition T2 vs T1
 ### Not Significant
@@ -3983,7 +4721,7 @@ ggplot(data = predicted, mapping = aes(x = CEFI.T.WM.SS_1, y = CEFI.T.WM.SS_3, c
 
 
 
-# 30 (c). Far-Transfer (parametric) ANCOVAs (outliers removed) -------------------------------------------
+# 47. Far-Transfer (parametric) ANCOVAs (outliers removed) -------------------------------------------
 par(mfrow=c(2,2))
 
 ## ANCOVA
@@ -4317,10 +5055,11 @@ describeBy(predictedOR$CEFI.T.WM.SS_3, predictedOR$Group)
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #  *** IEM ***-----------------------------------------
 
-# 31. IEM Tables ----------------------------------------------
+# 48. IEM Tables ----------------------------------------------
 ### Create a data summary table first
 ### Now for table creation: One big table ...
 table <- describeBy(df1Final[,c(61,62,63,65,66,67)], df1Final$Group, mat = TRUE)
@@ -4366,7 +5105,7 @@ rm("table")
 
 
 
-# 31 (b).  Differences in IEM at T1 & T2----------------------------------------
+# 49.  Differences in IEM at T1 & T2----------------------------------------
 ### Time 1
 ### IEM: Maths
 t.test(IEMmaths_1 ~ Group, data=predicted)
@@ -4375,8 +5114,8 @@ mes(3.22, 2.55, 1.75, 2.02, 50, 55) ### Cohen's d
 
 ### IEM: English
 t.test(IEMenglish_1 ~ Group, data=predicted) # *** sig
-describeBy(df1$Age.Yr, df1$Group)
-mes(9.95, 10.1, 1.11, 1.05, 50, 55) ### Cohen's d 
+describeBy(predicted$IEMenglish_1, predicted$Group)
+mes(2.22, 3.98, 1.87, 1.3, 50, 55) ### Cohen's d 
 
 ### IEM: Concentration
 t.test(IEMconc._1 ~ Group, data=predicted)
@@ -4449,7 +5188,7 @@ ggplot(data = predicted, mapping = aes(x = IEMTotalScore_1, y = IEMTotalScore_2,
 
 
 
-# 31 (c).  Changes in IEM - Parametric & Robust----------------------------------------
+# 50.  Changes in IEM - Parametric & Robust----------------------------------------
 
 ### ANCOVAs for the IEM measures
 ### IEM: Maths
@@ -4607,7 +5346,7 @@ ggplot(data = predicted, mapping = aes(x = IEMenglish_2, y = IEMenglish_1, color
 
 
 
-# 31 (d). Changes in IEM (outliers removed)----------------------------------------------
+# 51. Changes in IEM (outliers removed)----------------------------------------------
 
 ### IEMmaths T2 vs T1
 model1 <- lm(IEMmaths_2 ~ IEMmaths_1 + Group, data = predictedOR)
@@ -4646,6 +5385,7 @@ Anova(aov(IEMenglish_2 ~ IEMenglish_1 * Group, data = predictedOR), type = "III"
 
 
 
+#...----------------------------------------------
 #...----------------------------------------------
 
 #  *** MODERATION (ITIM) ***-----------------------------------------
@@ -4686,7 +5426,7 @@ cor.test(ctrlITIM$WM2WM1, ctrlITIM$ITIM, use = "p") ## -0.04
 
 
 
-# 32. Robust Interactions ----------------------------------------------
+# 52. Robust Interactions ----------------------------------------------
 ### Let's just look at a 2-way interaction first (without groups)
 # see here for interpretation: https://datascienceplus.com/interpreting-three-way-interactions-in-r/
 ### rlm
@@ -4740,7 +5480,7 @@ interact_plot(myModelef, pred = EF_1, modx = ITIM, mod2 = Int, linearity.check =
 
 
 
-#### 32 (b). Trying to plot interactions ----------------------
+#### 53. Trying to plot interactions ----------------------
 ### see https://datascienceplus.com/interpreting-three-way-interactions-in-r/
 ### 2/3 of the way down the page about interpretting interactions between 2 continuous
 ### and 1 categorical variable
@@ -4913,7 +5653,7 @@ ggplot(predictedOR,aes(x=EF_1,y=EF_2,color=ITIM))+geom_point()+facet_grid(~Int)+
 
 
 
-### 32 (c). Johnson-Neyman interactions ----------------
+### 54. Johnson-Neyman interactions ----------------
 # Need to scale ITIM to get it to work in Johnson-Neyman analysis
 predicted$ITIMc <- c(scale(predicted$ITIM, scale = TRUE))
 predictedOR$ITIMc <- c(scale(predictedOR$ITIM, scale = TRUE))
@@ -4993,7 +5733,7 @@ inter.binning(Y = "wm_2", D = "Int", X = "ITIM", Z="wm_1", data = predicted, FE 
 
 
 
-# 33. Post-hoc interactions ----------------------
+# 55. Post-hoc interactions ----------------------
 
 ## does EF or WM moderate the improvement in PAT & NAI?
 myModel <- lm(PATmScale_2 ~ PATmScale_1 * EF_1 , data = predicted)
@@ -5039,34 +5779,96 @@ interact_plot(myModel, pred = Int, modx = Age.Yr, x.label = "Group", y.label = "
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 
 #  *** MEDIATION (PS)***-----------------------------------------
 
-# 33. Robust Mediation of RT for improvment ----------------------
-set.seed(2702)
+# 56. Processing Speed Analysis --------------------------------------------------
 
-### Does RT mediate the relationship between time 1 & 2/3 far-transfer scores?
-with(predicted, ZYmediate(NAI_1, NAI_2, RTaverage_1))
-with(predicted, ZYmediate(NAI_1, NAI_3, RTaverage_1))
-with(predicted, ZYmediate(PATmScale_2, PATmScale_1, RTaverage_1)) ### mediated effect
-summary(rlm(PATmScale_2  ~ PATmScale_1, data = predicted))
-with(predicted, ZYmediate(PATmScale_3, PATmScale_1, RTaverage_1)) ### mediated effect
-with(predicted, ZYmediate(PATrScale_2, PATrScale_1, RTaverage_1))
-with(predicted, ZYmediate(PATrScale_3, PATrScale_1, RTaverage_1)) ### mediated effect
+### Reaction Time T2 vs T1 ###
+### Not Significant
+model1 <- lm(RTaverage_2 ~ RTaverage_1 + Group, data = predicted)
+model2 <- lm(RTaverage_2 ~ RTaverage_1 * Group, data = predicted)
+simpleModel <- lm(RTaverage_2 ~ Group, data = predicted)
+summ(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(predicted$RTaverage_2 ~ predicted$Group, center = mean) ## Not significant
+# getting the sums squared for each effect using the Anova function from the car package
+sstable <- car::Anova(lm(RTaverage_2 ~ RTaverage_1 + Group, data = predicted), type = 3)
+# partial eta squared:
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
 
-# Does Reaction Time mediate the relationship between EF / WM and academic achievement?
-with(predicted, ZYmediate(EF_1, PATmScale_1, RTaverage_1))
-with(predicted, ZYmediate(EF_1, PATrScale_1, RTaverage_1))
-with(predicted, ZYmediate(EF_1, NAI_1, RTaverage_1))
-with(predicted, ZYmediate(wm_1, PATmScale_1, RTaverage_1)) ### significant mediation
-with(predicted, ZYmediate(wm_1, PATrScale_1, RTaverage_1)) ### significant mediation
-with(predicted, ZYmediate(wm_1, NAI_1, RTaverage_1))
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(predicted$RTaverage_2, predicted$Group)
 
 
 
 
 
-# 34. lavaan SEM Mediation Analysis --------------------------------------------------
+### Reaction Time T3 vs T1
+model1 <- lm(RTaverage_3 ~ RTaverage_1 + Group, data = predicted)
+model2 <- lm(RTaverage_3 ~ RTaverage_1 * Group, data = predicted)
+simpleModel <- lm(RTaverage_3 ~ Group, data = predicted)
+summ(model1)
+summ(model2)
+summ(simpleModel)
+### test assumption of homogeneity of slopes 
+anova(model1, model2) ### no problems here
+### test assumption of normal distribution of residuals
+par(mfrow=c(1,1))
+hist(residuals(model1), col="darkgray")
+plot(fitted(model1), residuals(model1))
+### test assumption of homogeneity of variance
+leveneTest(predicted$RTaverage_3 ~ predicted$Group, center = mean) ## Not significant
+# getting the sums squared for each effect using the Anova function from the car package
+sstable <- car::Anova(lm(RTaverage_3 ~ RTaverage_1 + Group, data = predicted), type = 3)
+# partial eta squared:
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+### alternative method (using the sjstats package)
+sjstats::eta_sq(model1, partial = TRUE, ci.lvl = .9)
+
+adjustedMeans <- effect("Group", model1, se = TRUE)
+summary(adjustedMeans)
+adjustedMeans$se
+summary(glht(model1, linfct = mcp(Group = "Tukey")))
+confint(glht(model1, linfct = mcp(Group = "Tukey")))
+describeBy(predicted$RTaverage_3, predicted$Group)
+
+
+
+
+# For Fry & Hale's (1996) developmental cascade theory for PS we should see an improvement in WM if we see an improvment in PS.
+### Did PS change from T1 to T2?
+yuend(predicted$RTaverage_1, predicted$RTaverage_2, tr = 0.2)
+psych::describe(predicted$RTaverage_1)
+psych::describe(predicted$RTaverage_2)
+mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d 
+
+### What about from T1 to T3?
+yuend(predicted$RTaverage_1, predicted$RTaverage_3)
+psych::describe(predicted$RTaverage_1)
+psych::describe(predicted$RTaverage_3)
+mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d 
+
+
+
+# 57. lavaan SEM Mediation Analysis --------------------------------------------------
 ### Need to scale RT otherwise variance is too large when compared to EF factor scores
 # See here for SEM with lavaan: https://www.neilmclatchie.com/using-r-mediation-analysis-with-lavaan/
 ### in lavaan SEM modelling
@@ -5079,44 +5881,6 @@ diffScores$RTaverage_1c <- c(scale(diffScores$RTaverage_1, scale = TRUE))
 
 ### Looking at whether PS mediates training effects (changes in scores) or outcomes
 ### (post-test scores)
-
-
-### Lavaan approach
-### Does PS mediate the relationship between WM_2 and Group?
-model <- ' 
-          RTaverage_1c  ~ a*Group
-          EF2EF1  ~ b*RTaverage_1c + c*Group
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","EF\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
-
-
-
-### Does PS mediate the relationship between WM_2 and Group?
-model <- ' 
-          RTaverage_1c  ~ a*Group
-          WM2WM1  ~ b*RTaverage_1c + c*Group
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-par(mfrow=c(1,2))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","WM\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
 
 
 ### Lavaan approach
@@ -5159,12 +5923,128 @@ semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","WM\nT2","WM\nT1
 
 
 
+# 58. Moderated Mediation ---------------
+#### USING Mediation Package
+citation("mediation")
+
+
+### EF
+set.seed(2702)
+Mod.Med.Model.1 <- lm(RTaverage_1c  ~ EF_1*Group, data = predicted)
+summary(Mod.Med.Model.1)
+set.seed(2702)
+Mod.Med.Model.2<-lm(EF_2 ~ EF_1*Group + RTaverage_1c, data = predicted)
+summary(Mod.Med.Model.2)
+set.seed(2702)
+Mod.Med.Exp <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
+                       covariates = list(Group = "Exp."), boot = TRUE,   
+                       boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
+summary(Mod.Med.Exp)
+plot(Mod.Med.Exp, xlim = 0:1)
+set.seed(2702)
+Mod.Med.Ctrl <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
+                        covariates = list(Group = "Ctrl"), boot = TRUE,   
+                        boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
+summary(Mod.Med.Ctrl)
+plot(Mod.Med.Ctrl, xlim = 0:1)
+set.seed(2702)
+Mod.Med.TestGroup <- mediate(Mod.Med.Model.1, Mod.Med.Model.2, boot = TRUE,  
+                             boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
+summary(Mod.Med.TestGroup)
+set.seed(2702)
+test.modmed(Mod.Med.TestGroup, covariates.1 = list(Group = "Exp."),   
+            covariates.2 = list(Group = "Ctrl"), sims = 10)
+
+plot(Mod.Med.TestGroup)
 
 
 
 
 
-# 35. Post-Hoc mediation Tests --------------------
+### WM
+set.seed(2702)
+Mod.Med.Model.1 <- lm(RTaverage_1c  ~ wm_1*Group, data = predicted)
+summary(Mod.Med.Model.1)
+Mod.Med.Model.2<-lm(wm_2 ~ wm_1*Group + RTaverage_1c, data = predicted)
+summary(Mod.Med.Model.2)
+set.seed(2702)
+Mod.Med.Exp <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
+                           covariates = list(Group = "Exp."), boot = TRUE,   
+                           boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
+summary(Mod.Med.Exp)
+plot(Mod.Med.Exp, xlim = 0:1)
+set.seed(2702)
+Mod.Med.Ctrl <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
+                       covariates = list(Group = "Ctrl"), boot = TRUE,   
+                       boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
+summary(Mod.Med.Ctrl)
+plot(Mod.Med.Ctrl, xlim = 0:1)
+
+set.seed(2702)
+Mod.Med.TestGroup <- mediate(Mod.Med.Model.1, Mod.Med.Model.2, boot = TRUE,  
+                            boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
+summary(Mod.Med.TestGroup)
+set.seed(2702)
+test.modmed(Mod.Med.TestGroup, covariates.1 = list(Group = "Exp."),   
+            covariates.2 = list(Group = "Ctrl"), sims = 10)
+
+plot(Mod.Med.TestGroup)
+
+
+
+
+
+
+
+
+### Lavaan approach but using difference score for outcome
+### Does PS mediate the relationship between EF and Group?
+model <- ' 
+          RTaverage_1c  ~ a*Group
+          EF2EF1  ~ b*RTaverage_1c + c*Group
+          indirect := a*b
+          direct := c
+          total := c + (a*b)
+         '
+fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
+summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
+parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
+par(mfrow=c(1,1))
+
+### Plot the SEM mediation model from lavaan
+semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","EF\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
+#text(0,-1.5,"All paths significant, p<0.01")
+
+
+
+### Does PS mediate the relationship between WM and Group?
+model <- ' 
+          RTaverage_1c  ~ a*Group
+          WM2WM1  ~ b*RTaverage_1c + c*Group
+          indirect := a*b
+          direct := c
+          total := c + (a*b)
+         '
+fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
+summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
+parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
+par(mfrow=c(1,2))
+
+### Plot the SEM mediation model from lavaan
+semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","WM\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
+#text(0,-1.5,"All paths significant, p<0.01")
+
+
+
+
+
+
+
+
+
+
+
+# 59. Post-Hoc mediation Tests --------------------
 ### These are some post-hoc tests... using Lavaan
 
 ### Does PS mediate the relationship between WM and Maths?
@@ -5242,9 +6122,13 @@ semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","PAT\nReading","
 
 
 
+
+
+
+#...----------------------------------------------
 #...----------------------------------------------
 #...*** TREATMENT FIDELITY ***----------------------------------------------
-# 36. Exp. Near-Transfer Improvement -----------------------------
+# 60. Exp. Near-Transfer Improvement -----------------------------
 ### Add fidelity measures to the back end of diffScores data table
 diffScores <- cbind(diffScores,fidelity[,7:33])
 write.csv(diffScores,"diffScores.csv")
@@ -5341,7 +6225,7 @@ count(diffScores, vars = ML.plat) # N = 50
 
 
 
-# 37. Ctrl Near-Transfer Improvement----------------------------------------------
+# 61. Ctrl Near-Transfer Improvement----------------------------------------------
 ### Score
 cor.test(diffScores$EF2EF1, diffScores$TC.Score, method = "pearson", conf.level = 0.95) 
 cor.test(diffScores$WM2WM1, diffScores$TC.Score, method = "pearson", conf.level = 0.95) # -0.333 * sig
@@ -5373,9 +6257,12 @@ count(diffScores, vars = TC.Attempts) # N = 48 (7 missing data for fidelity)
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 #...*** INDIVIDUAL DIFFERENCES***----------------------------------------------
+### raw values are used as per Karbach, Strobach & Schubert (2015)
 
-# 38. Prove that sample > normal  -----------------------------------------
+
+# 62. Prove that sample > normal  -----------------------------------------
 
 #Demonstrate that the sample is better than norm on NNAT2
 ####                  Norm    Ctrl    Exp     
@@ -5406,7 +6293,7 @@ mes(110.2, 115.96, 11.48, 13.27, 50, 55) ### Cohen's d 2 v 3
 
 
 
-# 39. Correlations: Magnification v. Compensation -----------------------------------------
+# 63. Correlations: Magnification v. Compensation -----------------------------------------
 
 ### This is asking the question of whether those of higher ability improved more
 ### Asking whether baseline cognitive should be +ve correlated with training gains
@@ -5422,10 +6309,23 @@ cor.test(diffScores$EF2EF1, diffScores$NAI_1, use = "p")
 cor.test(diffScores$WM2WM1, diffScores$NAI_1, use = "p") 
 # None of these correlations p < .05
 
+### These are the 'standardised' values for change scores
+### PATm
+cor.test(diffScoresSTD$EF2EF1std, diffScoresSTD$PATmScale_1, use = "p") 
+cor.test(diffScoresSTD$WM2WM1std, diffScoresSTD$PATmScale_1, use = "p")
+### PATr
+cor.test(diffScoresSTD$EF2EF1std, diffScoresSTD$PATrScale_1, use = "p")
+cor.test(diffScoresSTD$WM2WM1std, diffScoresSTD$PATrScale_1, use = "p") 
+### NAI
+cor.test(diffScoresSTD$EF2EF1std, diffScoresSTD$NAI_1, use = "p") 
+cor.test(diffScoresSTD$WM2WM1std, diffScoresSTD$NAI_1, use = "p") 
+# None of these correlations p < .05
+
 
 ### But this is generally... Need to ask this question of the Exp. Group
 ### Separate the data
 Exp <- subset(diffScores, diffScores$Group == "Exp.")
+ExpSTD <- subset(diffScoresSTD, diffScoresSTD$Group == "Exp.") ### For standardised gain scores
 
 ## test for normality - all p > .05
 shapiro.test(Exp$EF2EF1)
@@ -5446,10 +6346,23 @@ cor.test(Exp$WM2WM1, Exp$NAI_1, use = "p")
 ### None of this correlations P < .05
 
 
+### And again for the standardised scores...
+### PATm
+cor.test(ExpSTD$EF2EF1std, ExpSTD$PATmScale_1, use = "p") 
+cor.test(ExpSTD$WM2WM1std, ExpSTD$PATmScale_1, use = "p")
+### PATr
+cor.test(ExpSTD$EF2EF1std, ExpSTD$PATrScale_1, use = "p")
+cor.test(ExpSTD$WM2WM1std, ExpSTD$PATrScale_1, use = "p") 
+### NAI
+cor.test(ExpSTD$EF2EF1std, ExpSTD$NAI_1, use = "p") 
+cor.test(ExpSTD$WM2WM1std, ExpSTD$NAI_1, use = "p") 
+### None of this correlations P < .05
 
 
 
-# 40. Magnification: Split by Improvement -----------------------------
+
+
+# 64. Magnification: Split by Improvement -----------------------------
 ### let's look at those who improved more than others... what is it about them that makes them interesting to look at?
 ### We are just looking at the experimental group here
 ### let's use a different dataset
@@ -5485,7 +6398,7 @@ ggplot(data = diffScores2, mapping = aes(x = wm_1, y = wm_2, colour = WM2WM1grou
   labs (x = "WM T1", y = "WM T2") 
 
 
-# 41. Baseline differences -----------------------------
+# 65. Baseline differences -----------------------------
 
 ### Age? Is there a difference by Age
 t.test(Age.Yr ~ EF2EF1groups, data=diffScores2) # p = .88
@@ -5594,7 +6507,7 @@ mes(1.96, 2.48, 1.74, 1.98, 25, 25) ### Cohen's d
 
 
 
-#42. Bayes Factors ----------------------------------------------
+#66. Bayes Factors ----------------------------------------------
 
 # Calculations done in JASP
 
@@ -5605,8 +6518,9 @@ mes(1.96, 2.48, 1.74, 1.98, 25, 25) ### Cohen's d
 
 
 #...----------------------------------------------
+#...----------------------------------------------
 #*** GRADE DIFFERENCES ***----------------------------------------------
-# 43. Split by Grade: Baseline differences -----------------------------
+# 67. Split by Grade: Baseline differences -----------------------------
 ### let's create a group with just each Grade
 g3 <- subset(diffScores, diffScores$Grade == "3")
 g5 <- subset(diffScores, diffScores$Grade == "5")
@@ -5701,7 +6615,7 @@ t.test(CEFI.T.FX.SS_1 ~ Group, data=g5)
 t.test(CEFI.T.WM.SS_1 ~ Group, data=g5)
 
 
-#44. near-transfer ANCOVAs (Grade 5)----------------------------------------------
+#68. near-transfer ANCOVAs (Grade 5)----------------------------------------------
 ### EF T2 vs T1
 ### This shows a difference between groups for scores on T2 when accounting for T1 scores (CTRL > EXP)
 model1 <- lm(EF_2 ~ EF_1 + Group, data = g5)
@@ -5881,7 +6795,7 @@ ggplot(data = g5, mapping = aes(x = wm_1, y = wm_3, color = Group)) +
 
 
 
-#45. Year 5 graphs ----------------------------------------------
+#69. Year 5 graphs ----------------------------------------------
 
 predictedLong5 <- reshape(g5, varying=c(12:17), direction="long", idvar="ID", sep="_")
 
@@ -5911,7 +6825,7 @@ ggplot(predictedLong5, aes(Group, wm, fill=factor(time))) +
 
 
 
-#46. near-transfer ANCOVAs (Grade 3)----------------------------------------------
+#70. near-transfer ANCOVAs (Grade 3)----------------------------------------------
 ### EF T2 vs T1
 model1 <- lm(EF_2 ~ EF_1 + Group, data = g3)
 model2 <- lm(EF_2 ~ EF_1 * Group, data = g3)
@@ -6115,7 +7029,7 @@ ggplot(data = g3, mapping = aes(x = wm_1, y = wm_3, color = Group)) +
 
 
 
-#47. Year 3 graphs----------------------------------------------
+#71. Year 3 graphs----------------------------------------------
 
 predictedLong3 <- reshape(g3, varying=c(12:17), direction="long", idvar="ID", sep="_")
 
@@ -6141,7 +7055,7 @@ ggplot(predictedLong3, aes(Group, wm, fill=factor(time))) +
 #theme_apa()
 
 
-# 48. Line Plots----------------------------------------------
+# 72. Line Plots----------------------------------------------
 ### gF
 
 x1<-describeBy(g3$NAI_1, g3$Group)
@@ -6197,10 +7111,38 @@ ggplot(xPATnai, aes(x=Time, y=Mean, group=Group, color=Group)) +
 
 
 
-#...----------------------------------------------
+ 
 
 #...----------------------------------------------
 #...----------------------------------------------
+#*** COMPLEX SPAN DATA ANAYLYSIS ***------------
 
-#...----------------------------------------------
-#...----------------------------------------------
+# 73. Removal of entire cases of data for Complex Span Tasks -------------------------------------------
+### As FIML (which occurs as part of calculation for factors scores) can not usually be done when the data is NOT missing at random, then this does affect the validity of the WM scores. However, it does remove a significant number of the subjects if items are removed completely.
+df1alt <- df1[!(is.na(df1$X1OSPANpartialscore) | is.na(df1$X2OSPNpartialscore) | is.na(df1$X3OSPNpartialscore)), ]
+df1alt <- df1alt[!(is.na(df1$X1RSPANpartialscore) | is.na(df1$X2RSPANpartialscore) | is.na(df1$X3RSPANpartialscore)), ]
+df1alt <- df1alt[!(is.na(df1$X1SYMSPANpartialscore) | is.na(df1$X2SYMSPANpartialscore) | is.na(df1$X3SYMSPANpartialscore)), ]
+df1alt <-df1alt[c(1:41),]
+
+count(df1alt, df1alt$Group == "Exp.") ### now have exp n = 14 and control n = 27
+
+
+# 74. Dealing with the removed data - are the removed data participants different?  -------------------------------------------
+df1CST = read.csv("https://raw.githubusercontent.com/dlhegarty/PhD_Data/master/df1CST.csv")
+df1CST$CSTprob = as.factor(df1CST$CSTprob)
+
+### General info
+### Do groups differ on age? YES
+t.test(Age.Yr ~ CSTprob, data=df1CST)
+describeBy(df1CST$Age.Yr, df1CST$CSTprob)
+mes(10.5, 9.69, 0.85, 1.09, 44, 61) ### Cohen's d 
+
+
+### Individual T1 tests
+### Far-transfer measures
+t.test(X1NAI ~ CSTprob, data=df1CST)
+describeBy(df1CST$X1NAI, df1CST$CSTprob)
+mes(117.14, 110.39, 12.49, 12.23, 44, 61) ### Cohen's d = 0.55 [0.15, 0.95]
+
+
+
