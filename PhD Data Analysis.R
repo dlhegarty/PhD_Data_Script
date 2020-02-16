@@ -3790,8 +3790,8 @@ ggplot(data = df1NR, mapping = aes(x = X1SYMSPANpartialscore, y = X3SYMSPANparti
   geom_jitter() +
   geom_smooth(method = 'lm', se=FALSE) +
   geom_smooth(method = "loess", se=FALSE, linetype = "dashed", span = 0.75) +
-  labs (x = "EF Factor Score T1", y = "EF Factor Score T2") +
-  geom_vline(xintercept = c(0.285, 0.428, 0.571, 0.642, 0.786), col = "blue", lty=3) +
+  labs (x = "Symmetry Span Score T1", y = "Symmetry Span Score T3") +
+  geom_vline(xintercept = c(0.214, 0.357, 0.571, 0.642, 0.786), col = "blue", lty=3) +
   theme_apa()
 
 
@@ -7143,6 +7143,3 @@ mes(10.5, 9.69, 0.85, 1.09, 44, 61) ### Cohen's d
 t.test(X1NAI ~ CSTprob, data=df1CST)
 describeBy(df1CST$X1NAI, df1CST$CSTprob)
 mes(117.14, 110.39, 12.49, 12.23, 44, 61) ### Cohen's d = 0.55 [0.15, 0.95]
-
-
-
