@@ -5781,7 +5781,7 @@ interact_plot(myModel, pred = Int, modx = Age.Yr, x.label = "Group", y.label = "
 #...----------------------------------------------
 #...----------------------------------------------
 
-#  *** MEDIATION (PS)***-----------------------------------------
+#  *** Processing Speed ***-----------------------------------------
 
 # 56. Processing Speed Analysis --------------------------------------------------
 
@@ -5868,267 +5868,11 @@ mes(384.81, 408.78, 56.11, 61.29, 105, 105) ### Cohen's d
 
 
 
-# 57. lavaan SEM Mediation Analysis --------------------------------------------------
-### Need to scale RT otherwise variance is too large when compared to EF factor scores
-# See here for SEM with lavaan: https://www.neilmclatchie.com/using-r-mediation-analysis-with-lavaan/
-### in lavaan SEM modelling
-predicted$RTaverage_1c <- c(scale(predicted$RTaverage_1, scale = TRUE))
-diffScores$RTaverage_1c <- c(scale(diffScores$RTaverage_1, scale = TRUE))
-
-# ACME: Average Causal Mediation Effect (want this to be significant for mediation effect)
-# ADE: Average Direct Effect
-
-
-### Looking at whether PS mediates training effects (changes in scores) or outcomes
-### (post-test scores)
-
-
-### Lavaan approach
-### Does PS mediate the relationship between WM1 and WM2?
-model <- ' 
-          RTaverage_1c  ~ a*EF_1
-          EF_2  ~ b*RTaverage_1c + c*EF_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-summary(fit, standardized = TRUE, rsquare = TRUE)
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-par(mfrow=c(1,2))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, what = "paths",  whatLabels = "std", layout = "spring", nodeLabels = c("PS","EF\nT2","EF\nT1"), residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
-
-
-### Does PS mediate the relationship between WM1 and WM2?
-model <- ' 
-          RTaverage_1c  ~ a*wm_1
-          wm_2  ~ b*RTaverage_1c + c*wm_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-varTable(fit)
-summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
-par(mfrow=c(1,1))
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","WM\nT2","WM\nT1"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
-
-
-
-
-
-# 58. Moderated Mediation ---------------
-#### USING Mediation Package
-citation("mediation")
-
-
-### EF
-set.seed(2702)
-Mod.Med.Model.1 <- lm(RTaverage_1c  ~ EF_1*Group, data = predicted)
-summary(Mod.Med.Model.1)
-set.seed(2702)
-Mod.Med.Model.2<-lm(EF_2 ~ EF_1*Group + RTaverage_1c, data = predicted)
-summary(Mod.Med.Model.2)
-set.seed(2702)
-Mod.Med.Exp <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
-                       covariates = list(Group = "Exp."), boot = TRUE,   
-                       boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
-summary(Mod.Med.Exp)
-plot(Mod.Med.Exp, xlim = 0:1)
-set.seed(2702)
-Mod.Med.Ctrl <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
-                        covariates = list(Group = "Ctrl"), boot = TRUE,   
-                        boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
-summary(Mod.Med.Ctrl)
-plot(Mod.Med.Ctrl, xlim = 0:1)
-set.seed(2702)
-Mod.Med.TestGroup <- mediate(Mod.Med.Model.1, Mod.Med.Model.2, boot = TRUE,  
-                             boot.ci.type = "bca", sims = 10, treat="EF_1", mediator="RTaverage_1c")
-summary(Mod.Med.TestGroup)
-set.seed(2702)
-test.modmed(Mod.Med.TestGroup, covariates.1 = list(Group = "Exp."),   
-            covariates.2 = list(Group = "Ctrl"), sims = 10)
-
-plot(Mod.Med.TestGroup)
-
-
-
-
-
-### WM
-set.seed(2702)
-Mod.Med.Model.1 <- lm(RTaverage_1c  ~ wm_1*Group, data = predicted)
-summary(Mod.Med.Model.1)
-Mod.Med.Model.2<-lm(wm_2 ~ wm_1*Group + RTaverage_1c, data = predicted)
-summary(Mod.Med.Model.2)
-set.seed(2702)
-Mod.Med.Exp <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
-                           covariates = list(Group = "Exp."), boot = TRUE,   
-                           boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
-summary(Mod.Med.Exp)
-plot(Mod.Med.Exp, xlim = 0:1)
-set.seed(2702)
-Mod.Med.Ctrl <- mediate(Mod.Med.Model.1, Mod.Med.Model.2,    
-                       covariates = list(Group = "Ctrl"), boot = TRUE,   
-                       boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
-summary(Mod.Med.Ctrl)
-plot(Mod.Med.Ctrl, xlim = 0:1)
-
-set.seed(2702)
-Mod.Med.TestGroup <- mediate(Mod.Med.Model.1, Mod.Med.Model.2, boot = TRUE,  
-                            boot.ci.type = "bca", sims = 10, treat="wm_1", mediator="RTaverage_1c")
-summary(Mod.Med.TestGroup)
-set.seed(2702)
-test.modmed(Mod.Med.TestGroup, covariates.1 = list(Group = "Exp."),   
-            covariates.2 = list(Group = "Ctrl"), sims = 10)
-
-plot(Mod.Med.TestGroup)
-
-
-
-
-
-
-
-
-### Lavaan approach but using difference score for outcome
-### Does PS mediate the relationship between EF and Group?
-model <- ' 
-          RTaverage_1c  ~ a*Group
-          EF2EF1  ~ b*RTaverage_1c + c*Group
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","EF\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
-
-
-
-### Does PS mediate the relationship between WM and Group?
-model <- ' 
-          RTaverage_1c  ~ a*Group
-          WM2WM1  ~ b*RTaverage_1c + c*Group
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = diffScores, std.lv = TRUE, missing="fiml", estimator="MLR", meanstructure = TRUE)
-summary(fit, fit.measures = TRUE, standardized = TRUE, rsquare = TRUE)
-parameterEstimates(fit, boot.ci.type="bca.simple",level=0.95, ci=TRUE,standardized = FALSE)
-par(mfrow=c(1,2))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","WM\nDiff","Group"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-#text(0,-1.5,"All paths significant, p<0.01")
-
-
-
-
-
-
-
-
-
-
-
-# 59. Post-Hoc mediation Tests --------------------
-### These are some post-hoc tests... using Lavaan
-
-### Does PS mediate the relationship between WM and Maths?
-model <- ' 
-          RTaverage_1  ~ a*wm_1
-          PATmScale_1  ~ b*RTaverage_1 + c*wm_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted)
-summary(fit)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","PAT\nMaths","WM"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(10,5,5,5))
-text(0,-1.5,"All paths significant, p<0.01")
-
-
-
-
-### Does PS mediate relationship between WM & Reading?
-model <- ' 
-          RTaverage_1  ~ a*wm_1
-          PATrScale_1  ~ b*RTaverage_1 + c*wm_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted)
-summary(fit)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","PAT\nReading","WM"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(5,5,10,5))
-#text(0,1.5,"All paths and variances significant, p<0.01")
-
-
-
-### Does PS mediate relationship between EF & Maths?
-model <- ' 
-          RTaverage_1  ~ a*EF_1
-          PATmScale_1  ~ b*RTaverage_1 + c*EF_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted)
-summary(fit)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","PAT\nMaths","WM"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(5,5,10,5))
-#text(0,1.5,"All paths and variances significant, p<0.01")
-
-
-### Does RT mediate relationship between EF & Reading?
-model <- ' 
-          RTaverage_1  ~ a*EF_1
-          PATrScale_1  ~ b*RTaverage_1 + c*EF_1
-          indirect := a*b
-          direct := c
-          total := c + (a*b)
-         '
-fit <- sem(model, data = predicted)
-summary(fit)
-par(mfrow=c(1,1))
-
-### Plot the SEM mediation model from lavaan
-semPaths(fit, "diagram", layout = "spring", nodeLabels = c("PS","PAT\nReading","WM"), whatLabels = "std", residuals = F, curvePivot = TRUE, fade = T, intercepts = F, thresholds = F, exoCov = F, exoVar = F, edge.color = "black", nCharNodes = 0, sizeMan = 5, sizeMan2 = 4, label.scale = FALSE, label.cex = .9, edge.label.cex = .9, residScale = 9, mar = c(5,5,10,5))
-#text(0,1.5,"All paths and variances significant, p<0.01")
-
-
-
-
-
-
-
-
 
 #...----------------------------------------------
 #...----------------------------------------------
 #...*** TREATMENT FIDELITY ***----------------------------------------------
-# 60. Exp. Near-Transfer Improvement -----------------------------
+# 57. Exp. Near-Transfer Improvement -----------------------------
 ### Add fidelity measures to the back end of diffScores data table
 diffScores <- cbind(diffScores,fidelity[,7:33])
 write.csv(diffScores,"diffScores.csv")
@@ -6225,7 +5969,7 @@ count(diffScores, vars = ML.plat) # N = 50
 
 
 
-# 61. Ctrl Near-Transfer Improvement----------------------------------------------
+# 58. Ctrl Near-Transfer Improvement----------------------------------------------
 ### Score
 cor.test(diffScores$EF2EF1, diffScores$TC.Score, method = "pearson", conf.level = 0.95) 
 cor.test(diffScores$WM2WM1, diffScores$TC.Score, method = "pearson", conf.level = 0.95) # -0.333 * sig
@@ -6262,7 +6006,7 @@ count(diffScores, vars = TC.Attempts) # N = 48 (7 missing data for fidelity)
 ### raw values are used as per Karbach, Strobach & Schubert (2015)
 
 
-# 62. Prove that sample > normal  -----------------------------------------
+# 59. Prove that sample > normal  -----------------------------------------
 
 #Demonstrate that the sample is better than norm on NNAT2
 ####                  Norm    Ctrl    Exp     
@@ -6293,7 +6037,7 @@ mes(110.2, 115.96, 11.48, 13.27, 50, 55) ### Cohen's d 2 v 3
 
 
 
-# 63. Correlations: Magnification v. Compensation -----------------------------------------
+# 60. Correlations: Magnification v. Compensation -----------------------------------------
 
 ### This is asking the question of whether those of higher ability improved more
 ### Asking whether baseline cognitive should be +ve correlated with training gains
@@ -6362,7 +6106,7 @@ cor.test(ExpSTD$WM2WM1std, ExpSTD$NAI_1, use = "p")
 
 
 
-# 64. Magnification: Split by Improvement -----------------------------
+# 61. Magnification: Split by Improvement -----------------------------
 ### let's look at those who improved more than others... what is it about them that makes them interesting to look at?
 ### We are just looking at the experimental group here
 ### let's use a different dataset
@@ -6398,7 +6142,7 @@ ggplot(data = diffScores2, mapping = aes(x = wm_1, y = wm_2, colour = WM2WM1grou
   labs (x = "WM T1", y = "WM T2") 
 
 
-# 65. Baseline differences -----------------------------
+# 62. Baseline differences -----------------------------
 
 ### Age? Is there a difference by Age
 t.test(Age.Yr ~ EF2EF1groups, data=diffScores2) # p = .88
@@ -6507,7 +6251,7 @@ mes(1.96, 2.48, 1.74, 1.98, 25, 25) ### Cohen's d
 
 
 
-#66. Bayes Factors ----------------------------------------------
+#63. Bayes Factors ----------------------------------------------
 
 # Calculations done in JASP
 
@@ -6520,7 +6264,7 @@ mes(1.96, 2.48, 1.74, 1.98, 25, 25) ### Cohen's d
 #...----------------------------------------------
 #...----------------------------------------------
 #*** GRADE DIFFERENCES ***----------------------------------------------
-# 67. Split by Grade: Baseline differences -----------------------------
+# 64. Split by Grade: Baseline differences -----------------------------
 ### let's create a group with just each Grade
 g3 <- subset(diffScores, diffScores$Grade == "3")
 g5 <- subset(diffScores, diffScores$Grade == "5")
@@ -6615,7 +6359,7 @@ t.test(CEFI.T.FX.SS_1 ~ Group, data=g5)
 t.test(CEFI.T.WM.SS_1 ~ Group, data=g5)
 
 
-#68. near-transfer ANCOVAs (Grade 5)----------------------------------------------
+#65. near-transfer ANCOVAs (Grade 5)----------------------------------------------
 ### EF T2 vs T1
 ### This shows a difference between groups for scores on T2 when accounting for T1 scores (CTRL > EXP)
 model1 <- lm(EF_2 ~ EF_1 + Group, data = g5)
@@ -6795,7 +6539,7 @@ ggplot(data = g5, mapping = aes(x = wm_1, y = wm_3, color = Group)) +
 
 
 
-#69. Year 5 graphs ----------------------------------------------
+#66. Year 5 graphs ----------------------------------------------
 
 predictedLong5 <- reshape(g5, varying=c(12:17), direction="long", idvar="ID", sep="_")
 
@@ -6825,7 +6569,7 @@ ggplot(predictedLong5, aes(Group, wm, fill=factor(time))) +
 
 
 
-#70. near-transfer ANCOVAs (Grade 3)----------------------------------------------
+#67. near-transfer ANCOVAs (Grade 3)----------------------------------------------
 ### EF T2 vs T1
 model1 <- lm(EF_2 ~ EF_1 + Group, data = g3)
 model2 <- lm(EF_2 ~ EF_1 * Group, data = g3)
@@ -7029,7 +6773,7 @@ ggplot(data = g3, mapping = aes(x = wm_1, y = wm_3, color = Group)) +
 
 
 
-#71. Year 3 graphs----------------------------------------------
+#68. Year 3 graphs----------------------------------------------
 
 predictedLong3 <- reshape(g3, varying=c(12:17), direction="long", idvar="ID", sep="_")
 
@@ -7055,7 +6799,7 @@ ggplot(predictedLong3, aes(Group, wm, fill=factor(time))) +
 #theme_apa()
 
 
-# 72. Line Plots----------------------------------------------
+# 69. Line Plots----------------------------------------------
 ### gF
 
 x1<-describeBy(g3$NAI_1, g3$Group)
@@ -7117,7 +6861,7 @@ ggplot(xPATnai, aes(x=Time, y=Mean, group=Group, color=Group)) +
 #...----------------------------------------------
 #*** COMPLEX SPAN DATA ANAYLYSIS ***------------
 
-# 73. Removal of entire cases of data for Complex Span Tasks -------------------------------------------
+# 70. Removal of entire cases of data for Complex Span Tasks -------------------------------------------
 ### As FIML (which occurs as part of calculation for factors scores) can not usually be done when the data is NOT missing at random, then this does affect the validity of the WM scores. However, it does remove a significant number of the subjects if items are removed completely.
 df1alt <- df1[!(is.na(df1$X1OSPANpartialscore) | is.na(df1$X2OSPNpartialscore) | is.na(df1$X3OSPNpartialscore)), ]
 df1alt <- df1alt[!(is.na(df1$X1RSPANpartialscore) | is.na(df1$X2RSPANpartialscore) | is.na(df1$X3RSPANpartialscore)), ]
@@ -7127,7 +6871,7 @@ df1alt <-df1alt[c(1:41),]
 count(df1alt, df1alt$Group == "Exp.") ### now have exp n = 14 and control n = 27
 
 
-# 74. Dealing with the removed data - are the removed data participants different?  -------------------------------------------
+# 71. Dealing with the removed data - are the removed data participants different?  -------------------------------------------
 df1CST = read.csv("https://raw.githubusercontent.com/dlhegarty/PhD_Data/master/df1CST.csv")
 df1CST$CSTprob = as.factor(df1CST$CSTprob)
 
@@ -7143,3 +6887,6 @@ mes(10.5, 9.69, 0.85, 1.09, 44, 61) ### Cohen's d
 t.test(X1NAI ~ CSTprob, data=df1CST)
 describeBy(df1CST$X1NAI, df1CST$CSTprob)
 mes(117.14, 110.39, 12.49, 12.23, 44, 61) ### Cohen's d = 0.55 [0.15, 0.95]
+
+
+
